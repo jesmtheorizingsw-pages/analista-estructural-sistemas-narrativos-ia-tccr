@@ -135,8 +135,8 @@
                 * **Contenido Proposicional (Núcleo Narrativo):** Afirmaciones nucleares abstractas y fundamentales que se sostienen en el relato. (Regla: ¿Qué se afirma?).
                 * **Evaluación Cognitiva (Cuerpo Narrativo):** Juicio sobre la coherencia, evidencia, encaje sistémico y ético del Núcleo. (Regla: ¿Cómo se justifica?).
                 * **Actitud Epistémica:** Disposición frente al conocimiento (certeza, duda, apertura) que regula la revisión crítica del relato.
-                * **Propósito Narrativo:** Intención deliberada del relato (explicar, persuadir, coordinar, legitimar prácticas). (Regla: Propósito $\neq$ Función).
-                * **Función Narrativa:** Efectos relacionales, de comportamiento y de poder que produce el relato. (Regla: Función $\neq$ Propósito).
+                * **Propósito Narrativo:** Intención deliberada del relato (explicar, persuadir, coordinar, legitimar prácticas). (Regla: Propósito ≠ Función).
+                * **Función Narrativa:** Efectos relacionales, de comportamiento y de poder que produce el relato. (Regla: Función ≠ Propósito).
             5.  **Output Formato:** Genera un único bloque de texto técnico y profundo en formato Markdown. Utiliza títulos H3 para cada uno de los 8 elementos y mantén la rigurosidad conceptual de la TCCR.
         `;
 
@@ -290,7 +290,17 @@
             
             // Reemplazar negritas (**)
             htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+// — NUEVO — listas con "* " -> viñetas de texto
+htmlText = htmlText.replace(/^\*\s+(.*)$/gm, '• $1');
 
+// — NUEVO — LaTeX más frecuente -> símbolos Unicode
+htmlText = htmlText
+  .replace(/\$(\\rightarrow|\\to)\$/g, '→')
+  .replace(/\$(\\leftarrow)\$/g, '←')
+  .replace(/\$(\\leftrightarrow)\$/g, '↔')
+  .replace(/\$(\\Rightarrow)\$/g, '⇒')
+  .replace(/\$(\\Leftarrow)\$/g, '⇐')
+  .replace(/\$(\\neq|\\ne)\$/g, '≠');
             // Convertir saltos de línea dobles a etiquetas de párrafo y saltos de línea simples a <br>
             // Esto es crucial para mantener la estructura de la respuesta de la IA.
             htmlText = htmlText.replace(/\n\n/g, '<p>');
