@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analista de Sistemas Narrativos Cognosistémicos (TCCR)</title>
+    <!-- Carga de Tailwind CSS para un diseño moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para mejor apariencia y fuente */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc; /* Fondo suave */
+        }
+        .container-tccr {
+            max-width: 900px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem; /* Bordes redondeados */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .text-area-input {
+            min-height: 200px;
+        }
+        /* Estilo para el botón con efecto profesional */
+        .btn-tccr {
+            background-color: #0077b6; /* Azul profesional */
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .btn-tccr:hover {
+            background-color: #005f96;
+        }
+        .btn-tccr:active {
+            transform: scale(0.98);
+        }
+        /* Estilo para el resultado del análisis (H3) */
+        #narrativeAnalysis h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0077b6; /* Color del análisis */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid #e0f7fa; /* Subrayado sutil */
+        }
+        #narrativeAnalysis p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            text-align: justify;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="container-tccr mx-auto">
+        <!-- Título y Descripción -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">
+                Analista Estructural de Sistemas Narrativos
+            </h1>
+            <h2 class="text-xl text-gray-600 font-semibold mb-4">
+                Teoría Cognosistémica de la Construcción Relacional Psicosocial Humana (TCCR)
+            </h2>
+            <p class="text-gray-500 max-w-2xl mx-auto">
+                Herramienta profesional para el **análisis riguroso de narrativas** según los 8 elementos constitutivos del Sistema Narrativo Cognosistémico (SNC) propuesto por Jalin Simunovic (2025). Diseñada para Trabajo Social y ciencias sociales.
+            </p>
+        </header>
+
+        <div class="card p-6 md:p-10">
+            <!-- Área de Ingreso de Narrativa -->
+            <h3 class="text-2xl font-bold text-gray-700 mb-4">1. Ingrese la Narrativa a Analizar</h3>
+            <textarea id="narrativeInput" class="text-area-input w-full p-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 resize-y" placeholder="Escriba aquí la narrativa o relato (ej. un extracto de entrevista, un discurso institucional, o una observación de práctica grupal). Asegúrese de incluir contexto si es posible."></textarea>
+            
+            <button id="analyzeButton" onclick="analyzeNarrative()" class="btn-tccr w-full mt-4 py-3 text-white font-bold rounded-lg shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300" disabled>
+                Cargando Herramienta...
+            </button>
+
+            <!-- Indicador de Carga -->
+            <div id="loadingIndicator" class="mt-6 hidden flex items-center justify-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-blue-700 font-medium">Realizando análisis estructural profundo desde la TCCR...</span>
+            </div>
+        </div>
+
+        <!-- Área de Resultados -->
+        <div id="resultsArea" class="mt-8 hidden">
+            <h3 class="text-3xl font-bold text-gray-800 mb-4">2. Resultado del Análisis Estructural (SNC - TCCR)</h3>
+            <div id="narrativeAnalysis" class="card p-6 md:p-10 text-gray-700 leading-relaxed space-y-4">
+                <!-- El análisis de la IA se insertará aquí -->
+            </div>
+        </div>
+
+        <!-- Área para mensajes de error o información -->
+        <div id="messageBox" class="mt-6 p-4 bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg hidden">
+            <!-- Mensajes de la app (ej. solicitud de contexto) -->
+        </div>
+
+    </div>
+
+    <!-- Script de Inicialización y Lógica de Análisis (INCLUYE LAS REGLAS DE ORO INTERNAS) -->
+    <script type="module">
+        // --- Importaciones de Firebase (Necesarias por el entorno) ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- Variables de Entorno y Configuración ---
+        const apiKey = ""; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        
+        let app;
+        let auth;
+        let db;
+        let userId;
+
+        // --- REGLAS DE ORO Y FILTRO CONCEPTUAL TCCR (INFORMACIÓN INTERNA Y NO VISIBLE) ---
+        // Este System Prompt opera como el filtro conceptual estricto que asegura la rigurosidad TCCR
+        const TCCR_SYSTEM_INSTRUCTION = `
+            Actúa como un analista experto en la "Teoría Cognosistémica de la Construcción Relacional Psicosocial Humana" (TCCR) de Jalin Simunovic (2025).
+            Tu rol es realizar un **análisis estructural detallado, riguroso y técnico** de un Sistema Narrativo Cognosistémico (SNC) basándote estrictamente en sus 8 elementos constitutivos.
+            
+            **I. Anclaje Teórico TCCR (Reglas de Oro del Marco Conceptual):**
+            1.  **Persona y Rigor:** Utiliza lenguaje académico, claro y con foco en el potencial de intervención psicosocial.
+            2.  **SNC vs. Cognosistema:** El SNC es la unidad de análisis (un tejido de sentido). **PROHIBICIÓN ESTRICTA:** Nunca uses el término "Cognosistema" para referirte a un individuo, una familia o una organización aislada. El Cognosistema es el suprasistema de una sociedad específica. Si la narrativa es personal, habla de un "Sistema Narrativo Micro" dentro del Cognosistema social.
+            3.  **Estructura Obligatoria:** Debes analizar OBLIGATORIAMENTE y de forma diferenciada la narrativa en los siguientes 8 elementos.
+            4.  **Rigor de los 8 Elementos (Definición Operativa TCCR):**
+                * **Experiencia:** Hechos vividos, la materia prima para construir sentido.
+                * **Percepciones y Emociones:** Filtros sensoriales y afectivos que organizan la experiencia, regulan atención y valoración.
+                * **Contexto:** Entorno histórico, cultural e institucional que sitúa el relato y habilita/limita el sentido.
+                * **Contenido Proposicional (Núcleo Narrativo):** Afirmaciones nucleares abstractas y fundamentales que se sostienen en el relato. (Regla: ¿Qué se afirma?).
+                * **Evaluación Cognitiva (Cuerpo Narrativo):** Juicio sobre la coherencia, evidencia, encaje sistémico y ético del Núcleo. (Regla: ¿Cómo se justifica?).
+                * **Actitud Epistémica:** Disposición frente al conocimiento (certeza, duda, apertura) que regula la revisión crítica del relato.
+                * **Propósito Narrativo:** Intención deliberada del relato (explicar, persuadir, coordinar, legitimar prácticas). (Regla: Propósito $\neq$ Función).
+                * **Función Narrativa:** Efectos relacionales, de comportamiento y de poder que produce el relato. (Regla: Función $\neq$ Propósito).
+            5.  **Output Formato:** Genera un único bloque de texto técnico y profundo en formato Markdown. Utiliza títulos H3 para cada uno de los 8 elementos y mantén la rigurosidad conceptual de la TCCR.
+        `;
+
+        /**
+         * Inicializa Firebase y autenticación (boilerplate) y habilita el botón.
+         */
+        const initializeFirebase = async () => {
+            const narrativeInput = document.getElementById('narrativeInput');
+            const analyzeButton = document.getElementById('analyzeButton');
+
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+                if (firebaseConfig) {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    userId = auth.currentUser?.uid || crypto.randomUUID();
+                } 
+                
+                // Habilitar el botón después de la inicialización
+                analyzeButton.disabled = narrativeInput.value.trim().length < 20;
+                analyzeButton.textContent = 'Analizar Sistema Narrativo (SNC)';
+
+            } catch (error) {
+                console.error("Error durante la inicialización de Firebase/Auth:", error);
+                analyzeButton.textContent = 'Error de Configuración - Intente Recargar';
+            }
+
+            // Habilitar la interacción del botón al escribir
+            narrativeInput.addEventListener('input', () => {
+                analyzeButton.disabled = narrativeInput.value.trim().length < 20;
+            });
+        };
+
+        window.onload = initializeFirebase;
+
+
+        /**
+         * Realiza la llamada al API de Gemini para analizar la narrativa con el filtro TCCR.
+         */
+        window.analyzeNarrative = async function() {
+            const narrativeInput = document.getElementById('narrativeInput');
+            const resultsArea = document.getElementById('resultsArea');
+            const narrativeAnalysis = document.getElementById('narrativeAnalysis');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const analyzeButton = document.getElementById('analyzeButton');
+            const messageBox = document.getElementById('messageBox');
+
+            const userNarrative = narrativeInput.value.trim();
+
+            if (userNarrative.length < 20) {
+                messageBox.textContent = "Por favor, ingrese una narrativa más extensa para un análisis TCCR riguroso (mínimo 20 caracteres).";
+                messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-800').add('bg-yellow-100', 'text-yellow-800');
+                return;
+            } else {
+                messageBox.classList.add('hidden');
+            }
+
+            // 1. Feedback Visual
+            analyzeButton.disabled = true;
+            analyzeButton.textContent = 'Analizando...';
+            loadingIndicator.classList.remove('hidden');
+            resultsArea.classList.add('hidden');
+            narrativeAnalysis.innerHTML = '';
+
+
+            // 2. Construcción del Prompt
+            const userQuery = `Analiza la siguiente narrativa/relato de forma EXHAUSTIVA y PROFUNDA, desglosando y aplicando el concepto a cada uno de los 8 elementos del SNC de la TCCR (Experiencia, Percepciones/Emociones, Contexto, Núcleo, Cuerpo, Actitud Epistémica, Propósito, Función).
+
+**Narrativa a analizar:**
+"${userNarrative}"
+
+**Estructura de la respuesta:** Utiliza TÍTULOS H3 para cada uno de los 8 elementos y mantén la rigurosidad conceptual de la TCCR.
+            `;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: TCCR_SYSTEM_INSTRUCTION }] // Filtro TCCR Estricto
+                },
+            };
+
+            const maxRetries = 5;
+            let currentRetry = 0;
+            
+            // 3. Llamada al API con Retroceso Exponencial
+            while (currentRetry < maxRetries) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        narrativeAnalysis.innerHTML = parseMarkdown(text);
+                        resultsArea.classList.remove('hidden');
+                        return; // Éxito
+                    } else {
+                        throw new Error("Respuesta de la IA vacía o incompleta.");
+                    }
+
+                } catch (error) {
+                    console.error(`Intento ${currentRetry + 1} fallido. Error: ${error.message}`);
+                    currentRetry++;
+                    if (currentRetry < maxRetries) {
+                        const delay = Math.pow(2, currentRetry) * 1000; // Retraso exponencial (1s, 2s, 4s, 8s...)
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } else {
+                        // Último intento fallido
+                        narrativeAnalysis.innerHTML = `<p class="text-lg font-bold text-red-600">Error Crítico: No fue posible completar el análisis después de varios intentos. Verifique su narrativa o intente más tarde. (Falla en el Motor Cognosistémico)</p>`;
+                        resultsArea.classList.remove('hidden');
+                        messageBox.classList.remove('hidden').add('bg-red-100', 'text-red-800');
+                        messageBox.textContent = 'Fallo en la comunicación con el motor de análisis TCCR. Intente con una narrativa más corta o revise si hay problemas de conexión.';
+                        break;
+                    }
+                } finally {
+                    // Solo ejecutar al final del proceso o tras un fallo definitivo
+                    if (currentRetry === maxRetries || narrativeAnalysis.innerHTML !== '') {
+                        loadingIndicator.classList.add('hidden');
+                        analyzeButton.disabled = narrativeInput.value.trim().length < 20;
+                        analyzeButton.textContent = 'Analizar Sistema Narrativo (SNC)';
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Función para parsear Markdown básico (encabezados, negritas, saltos de línea) a HTML.
+         */
+        function parseMarkdown(markdownText) {
+            let htmlText = markdownText;
+
+            // Reemplazar encabezados H3 (###)
+            htmlText = htmlText.replace(/^###\s*(.*)$/gm, '<h3>$1</h3>');
+            
+            // Reemplazar negritas (**)
+            htmlText = htmlText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+            // Convertir saltos de línea dobles a etiquetas de párrafo y saltos de línea simples a <br>
+            // Esto es crucial para mantener la estructura de la respuesta de la IA.
+            htmlText = htmlText.replace(/\n\n/g, '<p>');
+            htmlText = htmlText.replace(/\n/g, '<br>');
+
+            // Asegurarse de que el inicio tenga un párrafo
+            if (!htmlText.startsWith('<p>') && !htmlText.startsWith('<h3>')) {
+                 htmlText = '<p>' + htmlText;
+            }
+           
+            // Cerrar párrafos si es necesario (simple heurística)
+            if (!htmlText.endsWith('</p>') && !htmlText.endsWith('<br>')) {
+                htmlText = htmlText + '</p>';
+            }
+
+            return htmlText;
+        }
+
+    </script>
+
+</body>
+</html>
