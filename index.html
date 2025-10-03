@@ -110,8 +110,8 @@
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // --- Variables de Entorno y Configuración ---
-        const apiKey = "AIzaSyDcSrf5qmddi3G3YdqmaQozqCzf8won3iA"; 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const ENDPOINT = "https://timely-hummingbird-fa79a0.netlify.app/.netlify/functions/gemini";
+        const APP_TOKEN = ""; // opcional: si activaste APP_CLIENT_TOKEN en Netlify, colócalo aquí
         
         let app;
         let auth;
@@ -221,11 +221,11 @@
             `;
 
             const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: {
-                    parts: [{ text: TCCR_SYSTEM_INSTRUCTION }] // Filtro TCCR Estricto
-                },
+                text: userQuery,
+                systemInstruction: TCCR_SYSTEM_INSTRUCTION,
+                // (opcional) puedes añadir generationConfig/safetySettings/model aquí
             };
+// (payload genérico para backend Netlify)
 
             const maxRetries = 5;
             let currentRetry = 0;
@@ -233,9 +233,9 @@
             // 3. Llamada al API con Retroceso Exponencial
             while (currentRetry < maxRetries) {
                 try {
-                    const response = await fetch(apiUrl, {
+                    const response = await fetch(ENDPOINT, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 'Content-Type': 'application/json', 'X-App-Key': APP_TOKEN },
                         body: JSON.stringify(payload)
                     });
 
@@ -244,7 +244,7 @@
                     }
 
                     const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const text = result?.output?.text;
 
                     if (text) {
                         narrativeAnalysis.innerHTML = parseMarkdown(text);
